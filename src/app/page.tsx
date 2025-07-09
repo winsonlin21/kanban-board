@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
   return (
     <main>
-      <Link href="/about">
-        <Button>Go to About Page</Button>
+      <Link href="/countries">
+        <Button>Go to country page</Button>
       </Link>
     </main>
   );
