@@ -1,12 +1,62 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+'use client'
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { NhostProvider } from "@nhost/nextjs";
+import { nhost } from '../lib/nhost'
+
+const getMovies = `
+  query {
+    movies {
+      title
+      genre
+      rating
+    }
+  }
+`;
+
+function App() {
   return (
-    <main>
-      <Link href="/about">
-        <Button>Go to About Page</Button>
-      </Link>
-    </main>
+    <NhostProvider nhost={nhost}>
+      <Home />
+    </NhostProvider>
   );
 }
+
+function Home() {
+  const [loading, setLoading] = useState(true);
+  const [movies, setMovies] = useState([]);
+
+  useEffect(() => {
+    async function fetchMovies() {
+      setLoading(true);
+      const { data, error } = await nhost.graphql.request(getMovies);
+
+      setMovies(data.movies);
+      setLoading(false);
+    }
+
+    fetchMovies();
+  }, []);
+
+  return (
+    <div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <table>
+          <tbody>
+            {movies.map((movie, index) => (
+              <tr key={index}>
+                <td>{movie.title}</td>
+                <td>{movie.genre}</td>
+                <td>{movie.rating}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+export default App;
